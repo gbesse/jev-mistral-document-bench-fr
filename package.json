@@ -1,0 +1,62 @@
+{
+  "name": "@gbesse/jev-mistral-document-bench-fr",
+  "version": "0.1.0",
+  "description": "Mesure champs, cellules et décisions sur des documents français annotés.",
+  "type": "module",
+  "license": "MIT",
+  "engines": {
+    "node": ">=22"
+  },
+  "exports": {
+    ".": {
+      "types": "./src/index.d.mts",
+      "import": "./src/index.mjs"
+    },
+    "./jev": {
+      "types": "./src/jev.d.mts",
+      "import": "./src/jev.mjs"
+    },
+    "./adapters": {
+      "types": "./src/adapters.d.mts",
+      "import": "./src/adapters.mjs"
+    }
+  },
+  "bin": {
+    "jev-mistral-document-bench-fr": "./bin/jev-mistral-document-bench-fr.mjs"
+  },
+  "scripts": {
+    "test": "node --test",
+    "demo": "node examples/demo.mjs",
+    "demo:limite": "node examples/cas-limite.mjs",
+    "demo:revue": "node examples/revue-humaine.mjs",
+    "bench": "node scripts/bench.mjs",
+    "bench:live": "node --env-file=.env scripts/bench.mjs --live",
+    "typecheck": "tsc --noEmit --strict --target ES2022 --module NodeNext docs/public-api-types.mts",
+    "demo:import": "node examples/import.mjs"
+  },
+  "dependencies": {
+    "pdfjs-dist": "6.4.299",
+    "pdf-lib": "1.17.1"
+  },
+  "devDependencies": {
+    "typescript": "5.9.3"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/gbesse/jev-mistral-document-bench-fr.git"
+  },
+  "files": [
+    "src",
+    "bin",
+    "examples",
+    "docs",
+    "corpus",
+    "scripts"
+  ],
+  "keywords": [
+    "jev",
+    "france",
+    "open-data",
+    "evidence"
+  ]
+}
