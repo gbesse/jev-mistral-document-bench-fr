@@ -102,3 +102,11 @@ Le corpus contient 10 cas français synthétiques, dont 7 réservés au test : p
 Source principale : [Documents français : mesurer extraction et preuves](https://docs.mistral.ai/studio/document-processing/basic_ocr). [Sources et licences](docs/sources.md). Code MIT ; corpus synthétique CC0.
 
 [Les douze projets de la série](docs/serie-fr.md).
+
+## Immutable evaluation input / Entrée capturée / Entrada capturada
+
+EN: Analysis now snapshots the complete dossier before planning or awaiting semantic decisions. Caller edits during a provider call cannot replace the evidence quotes, checks or output data behind the returned findings. Uncopyable records fail before any provider call. The snapshot preserves supplied French document content and annotations; it does not authenticate their provenance or establish OCR/model quality.
+
+FR : L’analyse capture désormais le dossier complet avant planification ou attente sémantique. Des modifications pendant l’appel ne remplacent plus citations, contrôles ou données de sortie derrière les constats retournés. Un dossier non copiable échoue avant tout appel. L’instantané conserve textes français et annotations fournis ; il n’authentifie pas leur provenance et ne prouve pas la qualité OCR/modèle.
+
+ES: El análisis captura el expediente completo antes de planificar o esperar decisiones. Cambios durante la llamada no sustituyen citas, controles ni datos detrás de hallazgos devueltos. Registros no copiables fallan antes de llamar. Conserva contenido francés y anotaciones proporcionadas; no autentica procedencia ni establece calidad OCR/modelo.

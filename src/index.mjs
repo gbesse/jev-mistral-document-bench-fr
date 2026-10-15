@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import * as domain from "./domain.mjs";
 const { prepare } = domain;
 import { validateChoiceResponse } from "./jev.mjs";
-export const VERSION = "0.1.0";
+export const VERSION = "0.1.1";
 export function text(v, name = "texte") {
   if (typeof v !== "string" || !v.trim() || v.length > 20000)
     throw new TypeError(`${name} : texte non vide, au plus 20 000 caractères`);
@@ -165,6 +165,8 @@ export async function analyze(
   signal?.throwIfAborted();
   if (!["throw", "review"].includes(onProviderError))
     throw new TypeError("Politique d’erreur inconnue");
+  try { input = structuredClone(input); }
+  catch { throw new TypeError('Dossier non copiable / Record cannot be snapshotted / No se puede copiar el registro'); }
   const p = plan(input);
   let response;
   let providerError = null;
