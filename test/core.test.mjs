@@ -246,3 +246,12 @@ test("L’annulation ne devient jamais une revue silencieuse", async () => {
     /annulation explicite/,
   );
 });
+
+test('caller edits during an async decision cannot change captured evidence or numeric outputs',async()=>{
+ const input=clone(corpus.find(c=>c.input.annotation.fields.some(f=>f.kind==='text')).input);
+ const field=input.annotation.fields.find(f=>f.kind==='text');input.extraction.fields[field.key]='distinct extracted text';
+ let release,entered;const ready=new Promise(resolve=>{entered=resolve;}),gate=new Promise(resolve=>{release=resolve;});
+ const pending=analyze(input,{mode:'jev',provider:{async decide({questions}){entered();await gate;return {model:MODEL,answers:Object.fromEntries(Object.keys(questions).map(id=>[id,{type:'choice',choice:'a_revoir',confidence:.9,probabilities:{etaye:.05,ecart:.05,a_revoir:.9}}])),usage:{input_tokens:1,output_tokens:0}};}}});
+ await ready;const original=input.documents[0].text;input.documents[0].text='caller changed after dispatch';input.annotation.fields[0].value=input.annotation.fields[0].value;
+ release();const result=await pending;assert.ok(result.findings.flatMap(f=>f.evidence).some(e=>e.quote===original));assert.ok(result.findings.every(f=>f.evidence.every(e=>e.quote!=='caller changed after dispatch')));
+});
