@@ -255,3 +255,19 @@ test('caller edits during an async decision cannot change captured evidence or n
  await ready;const original=input.documents[0].text;input.documents[0].text='caller changed after dispatch';input.annotation.fields[0].value=input.annotation.fields[0].value;
  release();const result=await pending;assert.ok(result.findings.flatMap(f=>f.evidence).some(e=>e.quote===original));assert.ok(result.findings.every(f=>f.evidence.every(e=>e.quote!=='caller changed after dispatch')));
 });
+
+test('provider cannot redefine the expected judgment contract through received questions',async()=>{
+ const item=corpus.find(c=>plan(c.input).pairs.some(f=>f.left.trim()&&f.right.trim()&&normalize(f.left)!==normalize(f.right)));
+ const provider={async decide(request){
+  for(const question of Object.values(request.questions))question.criteria.invented='provider controlled';
+  return {model:MODEL,answers:Object.fromEntries(Object.keys(request.questions).map(id=>[id,{type:'choice',choice:'invented',confidence:1,probabilities:{etaye:0,ecart:0,a_revoir:0,invented:1}}])),usage:{input_tokens:1,output_tokens:0}};
+ }};
+ await assert.rejects(analyze(item.input,{mode:'jev',provider}),/invalide/);
+});
+test('report probabilities and usage remain independent of retained provider response objects',async()=>{
+ const item=corpus.find(c=>plan(c.input).pairs.some(f=>f.left.trim()&&f.right.trim()&&normalize(f.left)!==normalize(f.right)));
+ let response;
+ const report=await analyze(item.input,{mode:'jev',provider:{async decide(request){response={model:MODEL,answers:Object.fromEntries(Object.keys(request.questions).map(id=>[id,{type:'choice',choice:'etaye',confidence:.95,probabilities:{etaye:.96,ecart:.02,a_revoir:.02}}])),usage:{input_tokens:7,output_tokens:0}};return response;}}});
+ const before=JSON.stringify(report);response.usage.input_tokens=999;for(const answer of Object.values(response.answers))answer.probabilities.etaye=0;
+ assert.equal(JSON.stringify(report),before);
+});

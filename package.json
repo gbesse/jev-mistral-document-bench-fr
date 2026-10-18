@@ -1,6 +1,6 @@
 {
   "name": "@gbesse/jev-mistral-document-bench-fr",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Mesure champs, cellules et décisions sur des documents français annotés.",
   "type": "module",
   "license": "MIT",

@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import * as domain from "./domain.mjs";
 const { prepare } = domain;
 import { validateChoiceResponse } from "./jev.mjs";
-export const VERSION = "0.1.1";
+export const VERSION = "0.1.2";
 export function text(v, name = "texte") {
   if (typeof v !== "string" || !v.trim() || v.length > 20000)
     throw new TypeError(`${name} : texte non vide, au plus 20 000 caractères`);
@@ -99,14 +99,14 @@ export function evidence(documents, ids) {
     };
   });
 }
-export const criteria = {
+export const criteria = Object.freeze({
   etaye:
     "Les passages établissent le rapprochement demandé, sans changer le public, l’objet, les exclusions ou les conditions. Une paraphrase fidèle est admise.",
   ecart:
     "Les passages apportent une contradiction explicite ou décrivent des objets, publics ou conditions différents.",
   a_revoir:
     "Les passages ne permettent pas de conclure : information absente, ambiguë ou preuve insuffisante.",
-};
+});
 export function plan(input) {
   if (!input || typeof input !== "object")
     throw new TypeError("Dossier JSON requis");
@@ -194,11 +194,11 @@ export async function analyze(
     if (!provider?.decide) throw new TypeError("Fournisseur Jev requis");
     try {
       response = validateChoiceResponse(
-        await provider.decide({
+        structuredClone(await provider.decide({
           state: "Comparaison de deux passages documentaires français.",
-          questions,
+          questions: structuredClone(questions),
           signal,
-        }),
+        })),
         questions,
       );
       signal?.throwIfAborted();

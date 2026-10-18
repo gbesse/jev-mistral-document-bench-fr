@@ -110,3 +110,10 @@ EN: Analysis now snapshots the complete dossier before planning or awaiting sema
 FR : L’analyse capture désormais le dossier complet avant planification ou attente sémantique. Des modifications pendant l’appel ne remplacent plus citations, contrôles ou données de sortie derrière les constats retournés. Un dossier non copiable échoue avant tout appel. L’instantané conserve textes français et annotations fournis ; il n’authentifie pas leur provenance et ne prouve pas la qualité OCR/modèle.
 
 ES: El análisis captura el expediente completo antes de planificar o esperar decisiones. Cambios durante la llamada no sustituyen citas, controles ni datos detrás de hallazgos devueltos. Registros no copiables fallan antes de llamar. Conserva contenido francés y anotaciones proporcionadas; no autentica procedencia ni establece calidad OCR/modelo.
+
+
+FR : Les questions attendues sont isolées de la copie envoyée au fournisseur ; modifier des critères reçus ne peut plus redéfinir le contrat utilisé pour valider sa réponse. Les critères exportés sont immuables et la réponse est copiée avant son incorporation au rapport. Cela protège l’intégrité des champs et probabilités déclarés, sans prouver l’exactitude OCR ni une supériorité entre modèles.
+
+EN: Expected questions are isolated from the copy sent to the provider; editing received criteria cannot redefine the contract used to validate its response. Exported criteria are immutable and responses are copied before inclusion in reports. This protects declared fields and probabilities without proving OCR accuracy or superiority between models.
+
+ES: Las preguntas esperadas están aisladas de la copia enviada al proveedor; editar criterios recibidos no redefine el contrato de validación. Los criterios exportados son inmutables y la respuesta se copia antes de incorporarla al informe. Protege campos y probabilidades declarados sin demostrar exactitud OCR ni superioridad entre modelos.
