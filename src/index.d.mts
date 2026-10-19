@@ -26,6 +26,9 @@ export interface Finding {
   action: string;
   refs: string[];
   evidence: Evidence[];
+  freshness?: {asOfDate:string;maxAgeDays:number;refs:{id:string;date:string;ageDays:number}[];requiresReview:boolean};
+  statusWithoutFreshness?: Status;
+  reasonWithoutFreshness?: string;
   confidence?: number | null;
   probabilities?: Record<Status, number> | null;
   model?: string | null;
@@ -44,6 +47,7 @@ export interface Report {
     confidenceThreshold: number;
     marginThreshold: number;
     calibration: string;
+    evidenceFreshness?: {asOfDate:string;maxAgeDays:number};
   };
   limitations: string[];
   providerError: {
@@ -68,6 +72,8 @@ export function analyze(
     confidenceThreshold?: number;
     marginThreshold?: number;
     onProviderError?: "throw" | "review";
+    asOfDate?: string;
+    maxEvidenceAgeDays?: number;
   },
 ): Promise<Report>;
 export function toHtml(report: Report): string;

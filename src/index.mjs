@@ -2,7 +2,7 @@ import { createHash } from "node:crypto";
 import * as domain from "./domain.mjs";
 const { prepare } = domain;
 import { validateChoiceResponse } from "./jev.mjs";
-export const VERSION = "0.1.2";
+export const VERSION = "0.1.3";
 export function text(v, name = "texte") {
   if (typeof v !== "string" || !v.trim() || v.length > 20000)
     throw new TypeError(`${name} : texte non vide, au plus 20 000 caractères`);
@@ -155,6 +155,8 @@ export async function analyze(
     confidenceThreshold = 0.75,
     marginThreshold = 0.2,
     onProviderError = "throw",
+    asOfDate,
+    maxEvidenceAgeDays,
   } = {},
 ) {
   if (!["regles", "extraction", "jev"].includes(mode))
@@ -167,12 +169,25 @@ export async function analyze(
     throw new TypeError("Politique d’erreur inconnue");
   try { input = structuredClone(input); }
   catch { throw new TypeError('Dossier non copiable / Record cannot be snapshotted / No se puede copiar el registro'); }
+  const invalidFreshness = () => { throw new TypeError("Date de référence ISO et âge entier non négatif requis ensemble / ISO reference date and nonnegative integer age required together / Se requieren juntos fecha ISO y edad entera no negativa"); };
+  let freshnessPolicy = null;
+  if (asOfDate !== undefined || maxEvidenceAgeDays !== undefined) {
+    if (!Number.isSafeInteger(maxEvidenceAgeDays) || maxEvidenceAgeDays < 0 || maxEvidenceAgeDays > 100000) invalidFreshness();
+    try { date(asOfDate); } catch { invalidFreshness(); }
+    freshnessPolicy = { asOfDate, maxAgeDays: maxEvidenceAgeDays };
+  }
   const p = plan(input);
+  const freshness = finding => {
+    if (!freshnessPolicy) return null;
+    const refs = finding.refs.map(id => { const sourceDate=p.documents.get(id).source.date; return {id, date:sourceDate, ageDays:(Date.parse(asOfDate)-Date.parse(sourceDate))/86400000}; });
+    return {...freshnessPolicy, refs, requiresReview:refs.some(ref=>ref.ageDays<0 || ref.ageDays>maxEvidenceAgeDays)};
+  };
   let response;
   let providerError = null;
   const questions = Object.create(null);
   for (const f of p.pairs) {
     if (
+      !freshness(f)?.requiresReview &&
       f.left.trim() &&
       f.right.trim() &&
       normalize(f.left) !== normalize(f.right)
@@ -224,7 +239,10 @@ export async function analyze(
       model = null,
       confidence = null,
       probabilities = null;
-    if (!f.left.trim() || !f.right.trim()) {
+    if (freshness(f)?.requiresReview) {
+      reason = "Preuve datée hors fenêtre / Dated evidence outside window / Prueba fechada fuera de ventana";
+      method = "code";
+    } else if (!f.left.trim() || !f.right.trim()) {
       reason = "Passage manquant : abstention.";
       method = "code";
     } else if (normalize(f.left) === normalize(f.right)) {
@@ -279,6 +297,15 @@ export async function analyze(
       model,
     });
   }
+  if (freshnessPolicy) for (const finding of findings) {
+    finding.freshness = freshness(finding);
+    if (finding.freshness.requiresReview) {
+      finding.statusWithoutFreshness = finding.status;
+      finding.reasonWithoutFreshness = finding.reason;
+      finding.status = "a_revoir";
+      finding.reason = "Preuve hors de la fenêtre temporelle déclarée : revue requise. / Evidence outside the declared time window: review required. / Prueba fuera de la ventana temporal declarada: revisión necesaria.";
+    }
+  }
   const status = findings.some((f) => f.status === "ecart")
     ? "ecart"
     : findings.some((f) => f.status === "a_revoir")
@@ -305,6 +332,7 @@ export async function analyze(
     policy: {
       confidenceThreshold,
       marginThreshold,
+      ...(freshnessPolicy ? { evidenceFreshness: freshnessPolicy } : {}),
       calibration: "Seuils de démarrage non calibrés sur des documents réels.",
     },
     limitations: [

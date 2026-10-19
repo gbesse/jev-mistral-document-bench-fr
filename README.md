@@ -117,3 +117,11 @@ FR : Les questions attendues sont isolées de la copie envoyée au fournisseur ;
 EN: Expected questions are isolated from the copy sent to the provider; editing received criteria cannot redefine the contract used to validate its response. Exported criteria are immutable and responses are copied before inclusion in reports. This protects declared fields and probabilities without proving OCR accuracy or superiority between models.
 
 ES: Las preguntas esperadas están aisladas de la copia enviada al proveedor; editar criterios recibidos no redefine el contrato de validación. Los criterios exportados son inmutables y la respuesta se copia antes de incorporarla al informe. Protege campos y probabilidades declarados sin demostrar exactitud OCR ni superioridad entre modelos.
+
+## Âge explicite des pièces / Explicit evidence age / Antigüedad explícita de pruebas
+
+FR — Option API : `analyze(dossier, {asOfDate: "2026-10-19", maxEvidenceAgeDays: 7})`. Une pièce future ou plus ancienne que la fenêtre impose la revue des contrôles concernés, y compris exacts ; les comparaisons Jev concernées ne sont pas envoyées. Les reçus gardent dates, âge et résultat préalable disponible. La borne est inclusive. Sans ces options, comportement inchangé. C’est une règle choisie par l’appelant, pas une détermination de validité juridique ou de fraîcheur réelle.
+
+EN — API option: `analyze(record, {asOfDate: "2026-10-19", maxEvidenceAgeDays: 7})`. Future or older evidence forces affected findings, including exact checks, into review; affected Jev comparisons are not sent. Receipts retain dates, ages and available pre-policy results. The boundary is inclusive. Without these options, behavior is unchanged. This is a caller-chosen rule, not a finding of legal validity or actual freshness.
+
+ES — Opción API: `analyze(expediente, {asOfDate: "2026-10-19", maxEvidenceAgeDays: 7})`. Pruebas futuras o más antiguas obligan a revisar controles afectados, incluidos exactos; comparaciones Jev afectadas no se envían. Recibos conservan fechas, edades y resultados previos disponibles. El límite es inclusivo. Sin opciones no cambia comportamiento. Es una regla elegida por quien llama, no una determinación de validez jurídica ni actualidad real.
